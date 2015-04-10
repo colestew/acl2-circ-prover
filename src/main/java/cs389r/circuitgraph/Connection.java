@@ -1,4 +1,4 @@
-package cs389r;
+package cs389r.circuitgraph;
 
 import java.util.ArrayList;
 import java.util.List;

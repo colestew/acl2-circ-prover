@@ -1,4 +1,4 @@
-package cs389r;
+package cs389r.circuitgraph;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,14 +8,6 @@ import java.util.List;
  * Created by colestewart on 4/5/15.
  */
 public class Gate {
-
-    public static final Comparator<Gate> GATE_COMPARATOR = (g1, g2) -> {
-        if (g1 == g2)
-            return 0;
-        else if (findGate(g1, g2))
-            return -1;
-        else return 1;
-    };
 
     public enum GateType {
         INPUT,
@@ -70,20 +62,6 @@ public class Gate {
 
     public String input() {
         return inputs.size() > 0 ? inputs.get(0).id : null;
-    }
-
-    public static boolean findGate(Gate source, Gate findMe) {
-        if (source == findMe) {
-            return true;
-        }
-        for (Connection c : source.outputs) {
-            for (Gate g : c.outputs) {
-                if (findGate(g, findMe)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public String toString() {

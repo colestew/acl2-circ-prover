@@ -1,10 +1,12 @@
-package cs389r;
+package cs389r.parsers;
+
+import cs389r.circuitgraph.Gate;
 
 /**
  * Created by colestewart on 4/5/15.
  */
 
-public class Gates {
+public class CedarGates {
     public static final Gate xor() {
         return new Gate(Gate.GateType.LOGIC, "xor");
     }

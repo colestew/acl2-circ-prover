@@ -122,7 +122,7 @@
 ;; to the correct functional implementation
 (defthm v-adder-represents-netlist
   (implies (and (booleanp a)
-                   (booleanp b))
+                (booleanp b))
               (equal (v-adder c (list a) (list b))
                      (full-adder-netlist a b c))))
 

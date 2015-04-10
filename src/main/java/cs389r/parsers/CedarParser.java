@@ -1,5 +1,8 @@
-package cs389r;
+package cs389r.parsers;
 
+import cs389r.circuitgraph.Circuit;
+import cs389r.circuitgraph.Connection;
+import cs389r.circuitgraph.Gate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -98,47 +101,47 @@ public class CedarParser {
         String gateType = type.substring(3);
         switch (gateType) {
             // standard gates
-            case "AND2" : return Gates.and();
-            case "AND3" : return Gates.and();
-            case "AND4" : return Gates.and();
-            case "OR2" : return Gates.or();
-            case "OR3" : return Gates.or();
-            case "OR4" : return Gates.or();
-            case "XOR2" : return Gates.xor();
-            case "XOR3" : return Gates.xor();
-            case "XOR4" : return Gates.xor();
-            case "XNOR2" : return Gates.xnor();
-            case "XNOR3" : return Gates.xnor();
-            case "XNOR4" : return Gates.xnor();
-            case "NAND2" : return Gates.nand();
-            case "NAND3" : return Gates.nand();
-            case "NAND4" : return Gates.nand();
-            case "NOR2" : return Gates.nor();
-            case "NOR3" : return Gates.nor();
-            case "NOR4" : return Gates.nor();
-            case "NANDX2" : return Gates.nandx();
-            case "NANDX3" : return Gates.nandx();
-            case "NANDX4" : return Gates.nandx();
-            case "NORX2" : return Gates.norx();
-            case "NORX3" : return Gates.norx();
-            case "NORX4" : return Gates.norx();
-            case "AND8" : return Gates.and();
-            case "OR8" : return Gates.or();
-            case "NAND8" : return Gates.nand();
-            case "NOR8" : return Gates.nor();
-            case "NANDX8" : return Gates.nand();
-            case "NORX8" : return Gates.nor();
+            case "AND2" : return CedarGates.and();
+            case "AND3" : return CedarGates.and();
+            case "AND4" : return CedarGates.and();
+            case "OR2" : return CedarGates.or();
+            case "OR3" : return CedarGates.or();
+            case "OR4" : return CedarGates.or();
+            case "XOR2" : return CedarGates.xor();
+            case "XOR3" : return CedarGates.xor();
+            case "XOR4" : return CedarGates.xor();
+            case "XNOR2" : return CedarGates.xnor();
+            case "XNOR3" : return CedarGates.xnor();
+            case "XNOR4" : return CedarGates.xnor();
+            case "NAND2" : return CedarGates.nand();
+            case "NAND3" : return CedarGates.nand();
+            case "NAND4" : return CedarGates.nand();
+            case "NOR2" : return CedarGates.nor();
+            case "NOR3" : return CedarGates.nor();
+            case "NOR4" : return CedarGates.nor();
+            case "NANDX2" : return CedarGates.nandx();
+            case "NANDX3" : return CedarGates.nandx();
+            case "NANDX4" : return CedarGates.nandx();
+            case "NORX2" : return CedarGates.norx();
+            case "NORX3" : return CedarGates.norx();
+            case "NORX4" : return CedarGates.norx();
+            case "AND8" : return CedarGates.and();
+            case "OR8" : return CedarGates.or();
+            case "NAND8" : return CedarGates.nand();
+            case "NOR8" : return CedarGates.nor();
+            case "NANDX8" : return CedarGates.nand();
+            case "NORX8" : return CedarGates.nor();
 
             // inverters
-            case "SMALL_INVERTER" : return Gates.inverter();
+            case "SMALL_INVERTER" : return CedarGates.inverter();
 
             // adders
-            case "FULLADDER_1BIT" : return Gates.fullAdder1();
-            case "FULLADDER_4BIT" : return Gates.fullAdder4();
+            case "FULLADDER_1BIT" : return CedarGates.fullAdder1();
+            case "FULLADDER_4BIT" : return CedarGates.fullAdder4();
 
             // input/output
-            case "FROM" : return Gates.input();
-            case "TO" : return Gates.output();
+            case "FROM" : return CedarGates.input();
+            case "TO" : return CedarGates.output();
             default : throw new IllegalArgumentException("Unsupported gate type: " + type);
         }
     }

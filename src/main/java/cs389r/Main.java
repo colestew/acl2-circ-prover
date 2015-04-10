@@ -1,11 +1,11 @@
 package cs389r;
 
-import org.w3c.dom.Document;
+import cs389r.acl2models.ModelWriter;
+import cs389r.acl2models.NetlistGenerator;
+import cs389r.circuitgraph.Circuit;
+import cs389r.parsers.CedarParser;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,6 +24,10 @@ public class Main {
         CedarParser parser = new CedarParser(cedarFile);
         Circuit circuit = parser.parse();
         NetlistGenerator generator = new NetlistGenerator(circuit, modelName);
-        generator.buildModel(stream);
+
+        ModelWriter writer = new ModelWriter(stream);
+        generator.buildModel(writer);
+
+        writer.writePieces();
     }
 }

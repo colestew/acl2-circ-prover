@@ -1,4 +1,6 @@
-package cs389r;
+package cs389r.acl2models;
+
+import cs389r.circuitgraph.Circuit;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,5 +17,5 @@ public abstract class ModelGenerator {
         this.modelName = modelName;
     }
 
-    public abstract void buildModel(OutputStream stream) throws IOException;
+    public abstract void buildModel(ModelWriter writer);
 }
