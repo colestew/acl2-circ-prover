@@ -21,6 +21,7 @@
   (if (zp x)
       0
     (one-at-a-time (- x 1))))
+
 (defthm div-2-lemma-0
   (implies (natp x)
            (equal (div-2 (* 2 x))
@@ -142,6 +143,8 @@
   :hints (("Subgoal *1/1.3" :use ((:instance v-to-nat-equal
                                              (a (cdr a))
                                              (b (cdr b)))))))
+
+;; proof of correctness for v->
 (defthm v->-correct
   (implies (and (boolean-listp a)
                 (boolean-listp b)
@@ -157,7 +160,7 @@
 ;; * By default the outputs are placed in alphabetical order. Feel free to move
 ;;   things around.
 
-(defun comparator-netlist (a0 a1 a2 a3 b0 b1 b2 b3)
+(defun 4-bit-comparator-netlist (a0 a1 a2 a3 b0 b1 b2 b3)
   (let* (
          (w12 (xnor a0 b0))
          (w19 (not b3))
@@ -185,41 +188,21 @@
 ;;            Proofs for correctness for comparator-netlist below
 ;; ----------------------------------------------------------------------------
 ;; The following set of proofs prove the correctness of each relation the
-;; circuit supports: =, <, >. We first perform the proofs by showing the
+;; circuit supports: =, <, >. We perform the proofs by showing the
 ;; functions are equivalent to our n-bit vector inequality functions defined
-;; above, then we show their correctness by converting the input vectors to
-;; natural numbers and demonstrating equality to the relations on the natural
-;; numbers
 
-;; equalities to n-bit comparator functions
 (defthm comparator-netlist-compares-=
   (implies (boolean-listp '(a0 a1 a2 a3 b0 b1 b2 b3))
            (equal (v-= (list a0 a1 a2 a3) (list b0 b1 b2 b3))
-                  (nth 0 (comparator-netlist a0 a1 a2 a3 b0 b1 b2 bits.3)))))
+                  (nth 0 (4-bit-comparator-netlist a0 a1 a2 a3 b0 b1 b2 bits.3)))))
 
 (defthm comparator-netlist-compares-<
   (implies (boolean-listp '(a0 a1 a2 a3 b0 b1 b2 b3))
            (equal (v-< '(a0 a1 a2 a3) '(b0 b1 b2 b3))
-                  (nth 2 (comparator-netlist a0 a1 a2 a3 b0 b1 b2 b3)))))
+                  (nth 2 (4-bit-comparator-netlist a0 a1 a2 a3 b0 b1 b2 b3)))))
 
 (defthm comparator-netlist-compares->
   (implies (boolean-listp '(a0 a1 a2 a3 b0 b1 b2 b3))
            (equal (v-> '(a0 a1 a2 a3) '(b0 b1 b2 b3))
-                  (nth 1 (comparator-netlist a0 a1 a2 a3 b0 b1 b2 b3)))))
+                  (nth 1 (4-bit-comparator-netlist a0 a1 a2 a3 b0 b1 b2 b3)))))
 
-;; equalities to converted natural number relations
-(defthm comparator-netlist-compares-=-2
-  (implies (boolean-listp '(a0 a1 a2 a3 b0 b1 b2 b3))
-           (equal (= (v-to-nat '(a0 a1 a2 a3))
-                     (v-to-nat '(b0 b1 b2 b3)))
-                  (nth 0 (comparator-netlist a0 a1 a2 a3 b0 b1 b2 b3)))))
-
-(defthm comparator-netlist-compares-<-2
-  (implies (boolean-listp '(a0 a1 a2 a3 b0 b1 b2 b3))
-           (equal (< (v-to-nat '(a0 a1 a2 a3)) (v-to-nat '(b0 b1 b2 b3)))
-                  (nth 2 (comparator-netlist a0 a1 a2 a3 b0 b1 b2 b3)))))
-
-(defthm comparator-netlist-compares->-2
-  (implies (boolean-listp '(a0 a1 a2 a3 b0 b1 b2 b3))
-           (equal (> (v-to-nat '(a0 a1 a2 a3)) (v-to-nat '(b0 b1 b2 b3)))
-                  (nth 1 (comparator-netlist a0 a1 a2 a3 b0 b1 b2 b3)))))
