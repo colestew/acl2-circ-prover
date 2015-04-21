@@ -1,8 +1,8 @@
 (ld "v-adder-example.lisp")
 
 ;; mode bits for netlist-f74181
-(defconst M-ADD* nil)
-(defconst S-ADD* (list t nil nil t))
+(defconst *M-ADD* nil)
+(defconst *S-ADD* (list t nil nil t))
 
 
 ;; f74182 from the TTL v3 from Texas Instruments. It is a lookahead-carry for
@@ -77,8 +77,7 @@
                   (nth 10 inputs)
                   (nth 11 inputs)
                   (nth 12 inputs)
-                  (nth 13 inputs)
-                  (nth 14 inputs)))
+                  (nth 13 inputs)))
 
 ;; (f74182-netlist (c~ p0 p1 p2 p3 g0 g1 g2 g3))
 ;; -> (list p~ g~ c~+z c~+y c~+x)
@@ -106,10 +105,10 @@
 ;; 2 => c~+x
 
 (defun f74182-to-f74181-v (f74182-output
-                             c~i
-                             a0 a1 a2 a3
-                             b0 b1 b2 b3
-                             m s-v)
+                           c~i
+                           a0 a1 a2 a3
+                           b0 b1 b2 b3
+                           m s-v)
   (list (nth (+ c~i 3) f74182-output)
         a0 a1 a2 a3
         b0 b1 b2 b3
@@ -124,9 +123,16 @@
         (nth f74181-output 5)
         (nth f74181-output 6)))
 
+(defun f74181-get-sum (f74181-output)
+  (list (nth f74181-output 0)
+        (nth f74181-output 1)
+        (nth f74181-output 2)
+        (nth f74181-output 3)))
 
-;; now we define the 32-bit lookahead-carry as presented in the TTL.
-(defun look-ahead-carry-32 (a b)
+
+;; now we define the 16-bit lookahead-carry as presented in the TTL.
+
+(defun look-ahead-carry-16 (a b)
   (let* ((a0 (nth 0 a))
          (a1 (nth 1 a))
          (a2 (nth 2 a))
@@ -143,22 +149,6 @@
          (a13 (nth 13 a))
          (a14 (nth 14 a))
          (a15 (nth 15 a))
-         (a16 (nth 16 a))
-         (a17 (nth 17 a))
-         (a18 (nth 18 a))
-         (a19 (nth 19 a))
-         (a20 (nth 20 a))
-         (a21 (nth 21 a))
-         (a22 (nth 22 a))
-         (a23 (nth 23 a))
-         (a24 (nth 24 a))
-         (a25 (nth 25 a))
-         (a26 (nth 26 a))
-         (a27 (nth 27 a))
-         (a28 (nth 28 a))
-         (a29 (nth 29 a))
-         (a30 (nth 30 a))
-         (a31 (nth 31 a))
          (b0 (nth 0 b))
          (b1 (nth 1 b))
          (b2 (nth 2 b))
@@ -175,31 +165,61 @@
          (b13 (nth 13 b))
          (b14 (nth 14 b))
          (b15 (nth 15 b))
-         (b16 (nth 16 b))
-         (b17 (nth 17 b))
-         (b18 (nth 18 b))
-         (b19 (nth 19 b))
-         (b20 (nth 20 b))
-         (b21 (nth 21 b))
-         (b22 (nth 22 b))
-         (b23 (nth 23 b))
-         (b24 (nth 24 b))
-         (b25 (nth 25 b))
-         (b26 (nth 26 b))
-         (b27 (nth 27 b))
-         (b28 (nth 28 b))
-         (b29 (nth 29 b))
-         (b30 (nth 30 b))
-         (b31 (nth 31 b))
-         (add-0 (f74181-netlist nil
-                                a0 a1 a2 a3
-                                b0 b1 b2 b3
-                                t nil nil t))
+
+         ;; adder 0
+         (add-0 (f74181-netlist-v (append (list nil
+                                                a0 a1 a2 a3
+                                                b0 b1 b2 b3)
+                                          *M-ADD*
+                                          *S-ADD*)))
          (add-0-cpg (f74181-get-cpg add-0))
-         (lookahead-0 (f74182-netlist (car   (add-0-cpg))
-                                      (cadr  (add-0-cpg)) nil nil nil
-                                      (caadr (add-0-cpg)) nil nil nil))
-         (add-1 (f74181-netlist-v )))))
+         (lookahead-0 (f74182-netlist (car   add-0-cpg)
+                                      (cadr  add-0-cpg) nil nil nil
+                                      (caadr add-0-cpg) nil nil nil))
+
+         ;; adder 1
+         (add-1 (f74181-netlist-v (f74182-to-f74181-v
+                                   lookahead-0 0
+                                   a4 a5 a6 a7
+                                   b4 b5 b6 b7
+                                   *M-ADD* *S-ADD*)))
+         (add-1-cpg (f74181-get-cpg add-1))
+         (lookahead-1 (f74182-netlist
+                       (car add-1-cpg)
+                       (cadr add-0-cpg) (cadr add-1-cpg) nil nil
+                       (caadr add-0-cpg) (caadr add-1-cpg) nil nil))
+
+         ;; adder 2
+         (add-2 (f74181-netlist-v(f74182-to-f74181-v
+                                  lookahead-1 1
+                                  a8 a9 a10 a11
+                                  b8 b9 b10 b11
+                                  *M-ADD* *S-ADD*)))
+         (add-2-cpg (f74181-get-cpg add-2))
+         (lookahead-2
+          (f74182-netlist
+           (car add-2-cpg)
+           (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) nil
+           (caadr add-0-cpg) (caadr add-1-cpg) (caadr add-2-cpg) nil))
+
+         ;; adder 3
+         (add-3 (f74181-netlist-v (f74182-to-f74181-v
+                                   lookahead-2 2
+                                   a12 a13 a14 a15
+                                   b12 b13 b14 b15
+                                   *M-ADD* *S-ADD*)))
+         (cpg-3 (f74181-get-cpg add-3))
+         (lookahead-3
+          (f74182-netlist
+           (car cpg-3)
+           (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) (cadr cpg-3)
+           (caadr add-0-cpg) (caadr add-1-cpg) (caadr add-2-cpg) (caadr cpg-3))))
+
+    (list (append (f74181-get-sum add-0)
+                  (f74181-get-sum add-1)
+                  (f74181-get-sum add-2)
+                  (f74181-get-sum add-3))
+          lookahead-3)))
 
 ;; (defun f74182-to-f74181-v (f74182-output
 ;;                              c~i
@@ -207,3 +227,4 @@
 ;;                              b0 b1 b2 b3
 ;;                              m s-v)
 ;; (f74182-netlist (c~ p0 p1 p2 p3 g0 g1 g2 g3))
+;; -> (list p~ g~ c~+z c~+y c~+x)
