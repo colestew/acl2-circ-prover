@@ -132,7 +132,7 @@
 
 ;; now we define the 16-bit lookahead-carry as presented in the TTL.
 
-(defun look-ahead-carry-16 (a b)
+(defun look-ahead-carry-16 (c a b)
   (let* ((a0 (nth 0 a))
          (a1 (nth 1 a))
          (a2 (nth 2 a))
@@ -167,7 +167,7 @@
          (b15 (nth 15 b))
 
          ;; adder 0
-         (add-0 (f74181-netlist-v (append (list nil
+         (add-0 (f74181-netlist-v (append (list c
                                                 a0 a1 a2 a3
                                                 b0 b1 b2 b3)
                                           *M-ADD*
@@ -221,10 +221,10 @@
                   (f74181-get-sum add-3))
           lookahead-3)))
 
-;; (defun f74182-to-f74181-v (f74182-output
-;;                              c~i
-;;                              a0 a1 a2 a3
-;;                              b0 b1 b2 b3
-;;                              m s-v)
-;; (f74182-netlist (c~ p0 p1 p2 p3 g0 g1 g2 g3))
-;; -> (list p~ g~ c~+z c~+y c~+x)
+(defthm lookahead-adder-16-really-adds
+  (let ((a '(a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15))
+        (b '(b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15)))
+    (equal (lookahead-carry-16 c a b)
+           (+ (if c 1 0)
+              (v-to-nat a)
+              (v-to-nat b)))))
