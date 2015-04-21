@@ -1,7 +1,17 @@
 (ld "v-adder-example.lisp")
 
+;; mode bits for netlist-f74181
+(defconst M-ADD* nil)
+(defconst S-ADD* (list t nil nil t))
+
+
+;; f74182 from the TTL v3 from Texas Instruments. It is a lookahead-carry for
+;; the f74181's in add mode. We will use this to connect 4 f74181's to create a
+;; 32-bit adder with lookahead and prove its correctness.
+
 (defun f74182-netlist (c~ p0 p1 p2 p3 g0 g1 g2 g3)
-  (let* (;; output for P in w4
+  (let* (
+         ;; output for P in w4
          (w0 p0)
          (w1 p1)
          (w2 p2)
@@ -46,7 +56,76 @@
          (c~+x w26))
     (list p~ g~ c~+z c~+y c~+x)))
 
-;; note s is (t nil nil t) for 181
+
+;; We create wrappers which accept vectors as input in the wrapper functions
+;; below to make it easier to define the lookahead-carry adder
+
+;; (f74181-netlist (c~ a0 a1 a2 a3 b0 b1 b2 b3 m s0 s1 s2 s3))
+;; -> (list f0 f1 f2 f3 cout~ p~ g~ a=b)))
+
+(defun f74181-netlist-v (inputs)
+  (f74181-netlist (nth 0 inputs)
+                  (nth 1 inputs)
+                  (nth 2 inputs)
+                  (nth 3 inputs)
+                  (nth 4 inputs)
+                  (nth 5 inputs)
+                  (nth 6 inputs)
+                  (nth 7 inputs)
+                  (nth 8 inputs)
+                  (nth 9 inputs)
+                  (nth 10 inputs)
+                  (nth 11 inputs)
+                  (nth 12 inputs)
+                  (nth 13 inputs)
+                  (nth 14 inputs)))
+
+;; (f74182-netlist (c~ p0 p1 p2 p3 g0 g1 g2 g3))
+;; -> (list p~ g~ c~+z c~+y c~+x)
+
+(defun f74182-netlist-v (inputs)
+  (f74182-netlist (nth 0 inputs)
+                  (nth 1 inputs)
+                  (nth 2 inputs)
+                  (nth 3 inputs)
+                  (nth 4 inputs)
+                  (nth 5 inputs)
+                  (nth 6 inputs)
+                  (nth 7 inputs)
+                  (nth 8 inputs)))
+
+
+;; the following functions will aid in providing the correct arguments to the
+;; f74181 and f74182 in the lookahead-carry.
+
+;; function which takes the output to a f74182 and produces the necessary input
+;; vector for a f74181.
+;; c~i is the carry type where
+;; 0 => c~+z
+;; 1 => c~+y
+;; 2 => c~+x
+
+(defun f74182-to-f74181-v (f74182-output
+                             c~i
+                             a0 a1 a2 a3
+                             b0 b1 b2 b3
+                             m s-v)
+  (list (nth (+ c~i 3) f74182-output)
+        a0 a1 a2 a3
+        b0 b1 b2 b3
+        m
+        (nth 0 s-v) (nth 1 s-v) (nth 2 s-v) (nth 3 s-v)))
+
+
+;; and a couple of helper functions for bit field extraction
+
+(defun f74181-get-cpg (f74181-output)
+  (list (nth f74181-output 4)
+        (nth f74181-output 5)
+        (nth f74181-output 6)))
+
+
+;; now we define the 32-bit lookahead-carry as presented in the TTL.
 (defun look-ahead-carry-32 (a b)
   (let* ((a0 (nth 0 a))
          (a1 (nth 1 a))
@@ -112,4 +191,19 @@
          (b29 (nth 29 b))
          (b30 (nth 30 b))
          (b31 (nth 31 b))
-         (add1 (f74181-netlist )))))
+         (add-0 (f74181-netlist nil
+                                a0 a1 a2 a3
+                                b0 b1 b2 b3
+                                t nil nil t))
+         (add-0-cpg (f74181-get-cpg add-0))
+         (lookahead-0 (f74182-netlist (car   (add-0-cpg))
+                                      (cadr  (add-0-cpg)) nil nil nil
+                                      (caadr (add-0-cpg)) nil nil nil))
+         (add-1 (f74181-netlist-v )))))
+
+;; (defun f74182-to-f74181-v (f74182-output
+;;                              c~i
+;;                              a0 a1 a2 a3
+;;                              b0 b1 b2 b3
+;;                              m s-v)
+;; (f74182-netlist (c~ p0 p1 p2 p3 g0 g1 g2 g3))
