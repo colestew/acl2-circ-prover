@@ -5,11 +5,11 @@
 ;; We can associate a certain output name to a wirename. The input and output
 ;; to a circuit is this association list.
 
-(defun next-st (st oracle)
-  (if (atom oracle)
-      state
-    (next-st (combinational-update st (car oracle))
-             (cdr oracle))))
+;; (defun next-st (st oracle)
+;;   (if (atom oracle)
+;;       state
+;;     (next-st (combinational-update st (car oracle))
+;;              (cdr oracle))))
 
 (defun nor (x y)
   (not (or x y)))
