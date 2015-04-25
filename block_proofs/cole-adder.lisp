@@ -97,7 +97,8 @@
 (defun f74181-generic-add (c~ a0 a1 a2 a3 b0 b1 b2 b3)
   (let* ((a (list a0 a1 a2 a3))
          (b (list b0 b1 b2 b3))
-         (add (v-adder (not c~) a b))
+         (c (not c~))
+         (add (v-adder c a b))
          (sum-0 (nth 0 add))
          (sum-1 (nth 1 add))
          (sum-2 (nth 2 add))
@@ -105,8 +106,32 @@
          (cout (not (nth 4 add)))
          (p~ (v-propagate a b))
          (g~ (v-generate a b))
-         (a=b (equal a b)))
+         (a=b (and sum-0 sum-1 sum-2 sum-3)))
     (list sum-0 sum-1 sum-2 sum-3 cout p~ g~ a=b)))
+
+
+(defthm f74181-generic-is-correct-c~=nil
+  (let ((a (list a0 a1 a2 a3))
+        (b (list b0 b1 b2 b3)))
+    (implies (and (boolean-listp a)
+                  (boolean-listp b)
+                  (booleanp c~))
+             (equal (f74181-netlist     nil a0 a1 a2 a3 b0 b1 b2 b3 nil t nil nil t)
+                    (f74181-generic-add nil a0 a1 a2 a3 b0 b1 b2 b3))))
+  :hints (("Goal" :bdd (:vars nil))))
+
+(defthm f74181-generic-is-correct-c~=t
+  (let ((a (list a0 a1 a2 a3))
+        (b (list b0 b1 b2 b3)))
+    (implies (and (boolean-listp a)
+                  (boolean-listp b)
+                  (booleanp c~))
+             (equal (f74181-netlist     t a0 a1 a2 a3 b0 b1 b2 b3 nil t nil nil t)
+                    (f74181-generic-add t a0 a1 a2 a3 b0 b1 b2 b3))))
+  :hints (("Goal" :bdd (:vars nil))))
+
+;; Note, doing cases here speeds this up by a large factor. I don't understand
+;; why the BDD algorithm can't understand this by itself though.
 
 (defthm f74181-generic-is-correct
   (let ((a (list a0 a1 a2 a3))
@@ -116,7 +141,14 @@
                   (booleanp c~))
              (equal (f74181-netlist     c~ a0 a1 a2 a3 b0 b1 b2 b3 nil t nil nil t)
                     (f74181-generic-add c~ a0 a1 a2 a3 b0 b1 b2 b3))))
-  :hints (("Goal" :bdd (:vars nil))))
+  :hints (("Goal" :cases ((equal c~ nil) (equal c~ t)))))
+
+
+(defun f74181-generic-v (inputs)
+  (f74181-generic-add
+    (nth 0 inputs)
+    (nth 1 inputs) (nth 2 inputs) (nth 3 inputs) (nth 4 inputs)
+    (nth 5 inputs) (nth 6 inputs) (nth 7 inputs) (nth 8 inputs)))
 
 
 ;; f74182 from the TTL v3 from Texas Instruments. It is a lookahead-carry for
@@ -353,10 +385,158 @@
           lookahead-3
           (car cpg-3))))
 
+(defun lookahead-adder-generic-16 (c a b m s0 s1 s2 s3)
+  (let* ((a0 (nth 0 a))
+         (a1 (nth 1 a))
+         (a2 (nth 2 a))
+         (a3 (nth 3 a))
+         (a4 (nth 4 a))
+         (a5 (nth 5 a))
+         (a6 (nth 6 a))
+         (a7 (nth 7 a))
+         (a8 (nth 8 a))
+         (a9 (nth 9 a))
+         (a10 (nth 10 a))
+         (a11 (nth 11 a))
+         (a12 (nth 12 a))
+         (a13 (nth 13 a))
+         (a14 (nth 14 a))
+         (a15 (nth 15 a))
+         (b0 (nth 0 b))
+         (b1 (nth 1 b))
+         (b2 (nth 2 b))
+         (b3 (nth 3 b))
+         (b4 (nth 4 b))
+         (b5 (nth 5 b))
+         (b6 (nth 6 b))
+         (b7 (nth 7 b))
+         (b8 (nth 8 b))
+         (b9 (nth 9 b))
+         (b10 (nth 10 b))
+         (b11 (nth 11 b))
+         (b12 (nth 12 b))
+         (b13 (nth 13 b))
+         (b14 (nth 14 b))
+         (b15 (nth 15 b))
+
+         ;; adder 0
+         (add-0 (f74181-generic-add c
+                                  a0 a1 a2 a3
+                                  b0 b1 b2 b3))
+         (add-0-f0  (car add-0))
+         (add-0-f1  (cadr add-0))
+         (add-0-f2  (caddr add-0))
+         (add-0-f3  (cadddr add-0))
+         (add-0-cpg (f74181-get-cpg add-0))
+         (lookahead-0 (f74182-netlist (car add-0-cpg)
+                                      (cadr add-0-cpg) nil nil nil
+                                      (caddr add-0-cpg) nil nil nil))
+
+         ;; adder 1
+         (add-1 (f74181-generic-v (f74182-to-f74181-v
+                                   lookahead-0 0
+                                   a4 a5 a6 a7
+                                   b4 b5 b6 b7
+                                   m s0 s1 s2 s3)))
+         (add-1-f0  (car add-1))
+         (add-1-f1  (cadr add-1))
+         (add-1-f2  (caddr add-1))
+         (add-1-f3  (cadddr add-1))
+         (add-1-cpg (f74181-get-cpg add-1))
+         (lookahead-1 (f74182-netlist
+                       (car add-0-cpg)
+                       (cadr add-0-cpg) (cadr add-1-cpg) nil nil
+                       (caddr add-0-cpg) (caddr add-1-cpg) nil nil))
+
+         ;; adder 2
+         (add-2 (f74181-generic-v (f74182-to-f74181-v
+                                   lookahead-1 1
+                                   a8 a9 a10 a11
+                                   b8 b9 b10 b11
+                                   m s0 s1 s2 s3)))
+         (add-2-f0  (car add-2))
+         (add-2-f1  (cadr add-2))
+         (add-2-f2  (caddr add-2))
+         (add-2-f3  (cadddr add-2))
+         (add-2-cpg (f74181-get-cpg add-2))
+         (lookahead-2
+          (f74182-netlist
+           (car add-0-cpg)
+           (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) nil
+           (caddr add-0-cpg) (caddr add-1-cpg) (caddr add-2-cpg) nil))
+
+         ;; adder 3
+         (add-3 (f74181-generic-v (f74182-to-f74181-v
+                                   lookahead-2 2
+                                   a12 a13 a14 a15
+                                   b12 b13 b14 b15
+                                   m s0 s1 s2 s3)))
+         (add-3-f0  (car add-3))
+         (add-3-f1  (cadr add-3))
+         (add-3-f2  (caddr add-3))
+         (add-3-f3  (cadddr add-3))
+         (cpg-3 (f74181-get-cpg add-3))
+         (lookahead-3
+          (f74182-netlist
+           (car add-0-cpg)
+           (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) (cadr cpg-3)
+           (caddr add-0-cpg) (caddr add-1-cpg) (caddr add-2-cpg) (caddr cpg-3))))
+
+    (list (list add-0-f0 add-0-f1 add-0-f2 add-0-f3
+                add-1-f0 add-1-f1 add-1-f2 add-1-f3
+                add-2-f0 add-2-f1 add-2-f2 add-2-f3
+                add-3-f0 add-3-f1 add-3-f2 add-3-f3)
+          lookahead-3
+          (car cpg-3))))
 
 ;; Now let's see if the carry-lookahead adder really works!
+;; we'll compare the proof times between the netlist and the generic adders
 
-(defthm lookahead-adder-16-really-adds
+;; just take my word for it that this one works. It takes about 36 seconds on
+;; my machine. We'll just use the models with the generic 16 bit lookaheads
+;; from here on out. The generic version of this proof (next) takes about 12 seconds.
+(skip-proofs
+ (defthm lookahead-adder-16-really-adds
+   (let* ((a (list a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15))
+          (b (list b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15))
+          (s *S-ADD*)
+          (s0 (car s))
+          (s1 (cadr s))
+          (s2 (caddr s))
+          (s3 (cadddr s))
+          (m *M-LOW*)
+          (output (lookahead-adder-16 (not cin) a b m s0 s1 s2 s3))
+          (sum (car output))
+          (out0 (nth 0 sum))
+          (out1 (nth 1 sum))
+          (out2 (nth 2 sum))
+          (out3 (nth 3 sum))
+          (out4 (nth 4 sum))
+          (out5 (nth 5 sum))
+          (out6 (nth 6 sum))
+          (out7 (nth 7 sum))
+          (out8 (nth 8 sum))
+          (out9 (nth 9 sum))
+          (out10 (nth 10 sum))
+          (out11 (nth 11 sum))
+          (out12 (nth 12 sum))
+          (out13 (nth 13 sum))
+          (out14 (nth 14 sum))
+          (out15 (nth 15 sum))
+          (cout (not (caddr output))))
+     (implies (and (boolean-listp a)
+                   (boolean-listp b)
+                   (boolean-listp s)
+                   (boolean-listp sum)
+                   (booleanp m)
+                   (booleanp cin)
+                   (booleanp cout))
+              (equal (list out0 out1 out2 out3 out4 out5 out6 out7
+                           out8 out9 out10 out11 out12 out13 out14 out15 cout)
+                     (v-adder cin a b))))
+   :hints (("Goal" :bdd (:vars nil)))))
+
+(defthm lookahead-adder-generic-16-really-adds
   (let* ((a (list a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15))
          (b (list b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15))
          (s *S-ADD*)
@@ -364,8 +544,9 @@
          (s1 (cadr s))
          (s2 (caddr s))
          (s3 (cadddr s))
+         (cin nil)
          (m *M-LOW*)
-         (output (lookahead-adder-16 (not cin) a b m s0 s1 s2 s3))
+         (output (lookahead-adder-generic-16 (not cin) a b m s0 s1 s2 s3))
          (sum (car output))
          (out0 (nth 0 sum))
          (out1 (nth 1 sum))
@@ -389,13 +570,11 @@
                   (boolean-listp s)
                   (boolean-listp sum)
                   (booleanp m)
-                  (booleanp cin)
                   (booleanp cout))
              (equal (list out0 out1 out2 out3 out4 out5 out6 out7
                           out8 out9 out10 out11 out12 out13 out14 out15 cout)
                     (v-adder cin a b))))
   :hints (("Goal" :bdd (:vars nil))))
-
 
 ;; Now we will define a 64-bit carry-lookahead adder using 4 16 bit lookahead
 ;; adders and another carry lookahead unit.
@@ -437,28 +616,28 @@
                     (nth 56 b) (nth 57 b) (nth 58 b) (nth 59 b)
                     (nth 60 b) (nth 61 b) (nth 62 b) (nth 63 b)))
 
-         (add-0 (lookahead-adder-16 cin a0 b0 m s0 s1 s2 s3))
+         (add-0 (lookahead-adder-generic-16 cin a0 b0 m s0 s1 s2 s3))
          (add-0-cpg (f74181-get-cpg add-0) )
          (look-0 (f74182-netlist
                   cin
                   (cadr add-0-cpg) nil nil nil
                   (caddr add-0-cpg) nil nil nil))
 
-         (add-1 (lookahead-adder-16 (nth 2 look-0) a16 b16 m s0 s1 s2 s3))
+         (add-1 (lookahead-adder-generic-16 (nth 2 look-0) a16 b16 m s0 s1 s2 s3))
          (add-1-cpg (f74181-get-cpg add-1))
          (look-1 (f74182-netlist
                   cin
                   (cadr add-0-cpg) (cadr add-1-cpg) nil nil
                   (caddr add-0-cpg) (caddr add-1-cpg) nil nil))
 
-         (add-2 (lookahead-adder-16 (nth 3 look-1) a32 b32 m s0 s1 s2 s3))
+         (add-2 (lookahead-adder-generic-16 (nth 3 look-1) a32 b32 m s0 s1 s2 s3))
          (add-2-cpg (f74181-get-cpg add-2))
          (look-2 (f74182-netlist
                   cin
                   (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) nil
                   (caddr add-0-cpg) (caddr add-1-cpg) (caddr add-2-cpg) nil))
 
-         (add-3 (lookahead-adder-16 (nth 4 look-2) a48 b48 m s0 s1 s2 s3))
+         (add-3 (lookahead-adder-generic-16 (nth 4 look-2) a48 b48 m s0 s1 s2 s3))
          (cpg-3 (f74181-get-cpg add-3))
          (look-3 (f74182-netlist
                   cin
@@ -487,7 +666,7 @@
 
 ;; Now we show that our 64-bit adder can actually add
 
-(defthm lookahead-adder-64-really-adds
+(defthm lookahead-adder-generic-64-really-adds
   (let* (
          (a (list a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15
                   a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31
