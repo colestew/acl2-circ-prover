@@ -604,9 +604,9 @@ Boolean bit-vector.  We give its definition below.
   (if (atom a)
       (list c)
     (cons (xor3 c (car a) (car b))
-	  (v-adder (b-carry c (car a) (car b))
-		   (cdr a)
-		   (cdr b)))))
+          (v-adder (b-carry c (car a) (car b))
+                   (cdr a)
+                   (cdr b)))))
 
 ;;;  We now prove that our ripple-carry adder V-ADDER really does
 ;;;  addition.
