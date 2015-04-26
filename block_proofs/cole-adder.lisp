@@ -4,218 +4,8 @@
 (defconst *M-LOW* nil)
 (defconst *S-ADD* (list t nil nil t))
 
-;; first we need to define a generic adder which returns a propagate and
-;; generate bit
-
-(defun v-propagate (a b)
-  (if (atom a)
-      nil
-    (or (and (car a) (car b))
-        (v-propagate (cdr a) (cdr b)))))
-
-(defun v-generate-r (a b prev)
-  (if (atom a)
-      prev
-    (v-generate-r (cdr a) (cdr b)
-                  (if prev
-                      (or (car a) (car b))
-                    (and (car a) (car b))))))
-
-(defun v-generate (a b)
-  (v-generate-r a b t))
-
-;; now we provide some unwinding theorems for the BDD algorithm
-
-(defthm v-propagate-cons
-  (equal (v-propagate (cons ai a) (cons bi b))
-         (or (and ai bi) (v-propagate a b))))
-
-(defthm v-generate-cons
-  (equal (v-generate-r (cons ai a) (cons bi b) prev)
-         (v-generate-r a b
-                       (if prev
-                           (or ai bi)
-                         (and ai bi)))))
-
-;; let's prove our propagate and generate functions are identical to the
-;; f74181's p~ and g~ output
-
-;; start with p~
-(thm (let* ((a (list a0 a1 a2 a3))
-            (b (list b0 b1 b2 b3))
-            (s *S-ADD*)
-            (s0 (car s))
-            (s1 (cadr s))
-            (s2 (caddr s))
-            (s3 (cadddr s))
-            (m nil)
-            (output (f74181-netlist cin
-                                a0 a1 a2 a3
-                                b0 b1 b2 b3
-                                m s0 s1 s2 s3))
-            (p~ (nth 5 output)))
-       (implies (and (boolean-listp a)
-                     (boolean-listp b)
-                     (boolean-listp s)
-                     (boolean-listp output)
-                     (booleanp m)
-                     (booleanp cin))
-                (equal p~ (v-propagate a b))))
-     :hints (("Goal" :bdd (:vars nil))))
-
-;; then a little g~
-(thm (let* ((a (list a0 a1 a2 a3))
-            (b (list b0 b1 b2 b3))
-            (s *S-ADD*)
-            (s0 (car s))
-            (s1 (cadr s))
-            (s2 (caddr s))
-            (s3 (cadddr s))
-            (m nil)
-            (output (f74181-netlist cin
-                                a0 a1 a2 a3
-                                b0 b1 b2 b3
-                                m s0 s1 s2 s3))
-            (g~ (nth 6 output)))
-       (implies (and (boolean-listp a)
-                     (boolean-listp b)
-                     (boolean-listp s)
-                     (boolean-listp output)
-                     (booleanp m)
-                     (booleanp cin))
-                (equal g~ (v-generate a b))))
-     :hints (("Goal" :bdd (:vars nil))))
-
-
-;; now let's make a wrapper for our generic functions and make a 1:1 mapping to
-;; the f74181 for m=0 and s=1001 [add]
-;;
-;; for reference:
-;; (f74181-netlist (c~ a0 a1 a2 a3 b0 b1 b2 b3 m s0 s1 s2 s3))
-;; -> (f0 f1 f2 f3 cout~ p~ g~ a=b)))
-
-(defun f74181-generic-add (c~ a0 a1 a2 a3 b0 b1 b2 b3)
-  (let* ((a (list a0 a1 a2 a3))
-         (b (list b0 b1 b2 b3))
-         (c (not c~))
-         (add (v-adder c a b))
-         (sum-0 (nth 0 add))
-         (sum-1 (nth 1 add))
-         (sum-2 (nth 2 add))
-         (sum-3 (nth 3 add))
-         (cout (not (nth 4 add)))
-         (p~ (v-propagate a b))
-         (g~ (v-generate a b))
-         (a=b (and sum-0 sum-1 sum-2 sum-3)))
-    (list sum-0 sum-1 sum-2 sum-3 cout p~ g~ a=b)))
-
-
-(defthm f74181-generic-is-correct
-  (let ((a (list a0 a1 a2 a3))
-        (b (list b0 b1 b2 b3)))
-    (implies (and (boolean-listp a)
-                  (boolean-listp b)
-                  (booleanp c~))
-             (equal (f74181-netlist     c~ a0 a1 a2 a3 b0 b1 b2 b3 nil t nil nil t)
-                    (f74181-generic-add c~ a0 a1 a2 a3 b0 b1 b2 b3))))
-  :hints (("Goal" :bdd (:vars nil))))
-
-
-;; while we're at it, we'll go ahead and make our own model of the lookahead
-;; carry circuit. It will take N propagate and generate inputs, output N-1
-;; carries and output a propagate and generate bit. It will have the same
-;; output as the f74182 when N=4
-
-;; the output propagate bit is true if any of the input propagate bits are high
-
-(defun v-or (a)
-  (if (atom a)
-      nil
-    (or (car a) (v-or (cdr a)))))
-
-;; the circuit for the generate bit looks like the following
-;; (or (and g0 g1 g2 g3)
-;;     (and p1 g1 g2 g3)
-;;     (and p2 g2 g3)
-;;     (and p3 g3))
-;;
-;; so we'll transform this into a recursive pattern
-
-(defun v-lkahead-generate-r (p g prev)
-  (if (atom p)
-      prev
-    (v-lkahead-generate-r (cdr p) (cdr g)
-                  (if prev
-                      (car g)
-                    (and (car p) (car g))))))
-
-(defun v-lkahead-generate (p g)
-  (v-lkahead-generate-r p g t))
-
-;; we now need a function to model the carries
-;; we notice the f74182 has the following pattern
-;; (nor (and p0 g0)
-;;      (and cin g0))
-
-;; (nor (and p1 g1)
-;;      (and p0 g0 g1)
-;;      (and cin g0 g1))
-
-;; (nor (and p2 g2)
-;;      (and p1 g1 g2)
-;;      (and p0 g0 g1 g2)
-;;      (and cin g0 g1 g2))
-
-;; (nor (and p3 g3)
-;;      (and p2 g2 g3)
-;;      (and p1 g1 g2 g3)
-;;      (and p0 g0 g1 g2 g3)
-;;      (and cin g0 g1 g2 g3))
-
-(defun v-lkahead-carries (cin p g)
-  ())
-
-;; and some more unwinding theorems
-(defthm v-or-cons
-  (equal (v-or (cons ai a))
-         (or ai (v-or a))))
-
-(defthm v-lkahead-generate-cons
-  (equal (v-lkahead-generate-r (cons p-i p) (cons gi g) prev)
-         (v-lkahead-generate-r p g
-                               (if prev
-                                   gi
-                                 (and p-i gi)))))
-
-(thm (let* ((p (list p0 p1 p2 p3))
-            (g (list g0 g1 g2 g3))
-            (output (f74182-netlist cin
-                                    p0 p1 p2 p3
-                                    g0 g1 g2 g3))
-            (p~ (car output))
-            (g~ (cadr output)))
-       (implies (and (boolean-listp p)
-                     (boolean-listp g)
-                     (booleanp cin))
-                (and (equal p~ (v-or p))
-                     (equal g~ (v-lkahead-generate p g)))))
-     :hints (("Goal" :bdd (:vars nil))))
-
-
-;; (f74182-netlist (c~ p0 p1 p2 p3 g0 g1 g2 g3))
-;; -> (p~ g~ c~+x c~+y c~+z)
-;; now let's make a wrapper for our f74182
-
-
-(defun f74181-generic-v (inputs)
-  (f74181-generic-add
-    (nth 0 inputs)
-    (nth 1 inputs) (nth 2 inputs) (nth 3 inputs) (nth 4 inputs)
-    (nth 5 inputs) (nth 6 inputs) (nth 7 inputs) (nth 8 inputs)))
-
 
 ;; f74182 from the TTL v3 from Texas Instruments. It is a lookahead-carry for
-
 ;; the f74181's in add mode. We will use this to connect 4 f74181's to create a
 ;; 32-bit adder with lookahead and prove its correctness.
 
@@ -257,8 +47,8 @@
          (w23 (nor w20 w21 w22))
 
          ;; output for c~+x in w26
-         (w24 (and w14 w5))
-         (w25 (and w5 w0))
+         (w24 (and w14 w5)) ;; and (not c~) g0
+         (w25 (and w5 w0))  ;; and g0 p0
          (w26 (nor w24 w25))
 
          ;; outputs of 74182
@@ -268,6 +58,202 @@
          (c~+y w23)
          (c~+x w26))
     (list p~ g~ c~+x c~+y c~+z)))
+
+;; first we need to define a generic adder which returns a propagate and
+;; generate bit
+
+(defun v-propagate (a b)
+  (if (atom a)
+      nil
+    (or (and (car a) (car b))
+        (v-propagate (cdr a) (cdr b)))))
+
+(defun v-generate-r (a b prev)
+  (if (atom a)
+      prev
+    (v-generate-r (cdr a) (cdr b)
+                  (if prev
+                      (or (car a) (car b))
+                    (and (car a) (car b))))))
+
+(defun v-generate (a b)
+  (v-generate-r a b t))
+
+;; now we provide some unwinding theorems for the BDD algorithm
+
+(defthm v-propagate-cons
+  (equal (v-propagate (cons ai a) (cons bi b))
+         (or (and ai bi) (v-propagate a b))))
+
+(defthm v-generate-cons
+  (equal (v-generate-r (cons ai a) (cons bi b) prev)
+         (v-generate-r a b
+                       (if prev
+                           (or ai bi)
+                         (and ai bi)))))
+
+;; now let's make a wrapper for our generic functions and make a 1:1 mapping to
+;; the f74181 for m=0 and s=1001 [add] using the propagate and generate
+;; functions we just defined
+
+(defun f74181-generic-add (c~ a0 a1 a2 a3 b0 b1 b2 b3)
+  (let* ((a (list a0 a1 a2 a3))
+         (b (list b0 b1 b2 b3))
+         (c (not c~))
+         (add (v-adder c a b))
+         (sum-0 (nth 0 add))
+         (sum-1 (nth 1 add))
+         (sum-2 (nth 2 add))
+         (sum-3 (nth 3 add))
+         (cout (not (nth 4 add)))
+         (p~ (v-propagate a b))
+         (g~ (v-generate a b))
+         (a=b (and sum-0 sum-1 sum-2 sum-3)))
+    (list sum-0 sum-1 sum-2 sum-3 cout p~ g~ a=b)))
+
+
+(defthm f74181-generic-is-correct
+  (let ((a (list a0 a1 a2 a3))
+        (b (list b0 b1 b2 b3)))
+    (implies (and (boolean-listp a)
+                  (boolean-listp b)
+                  (booleanp c~))
+             (equal (f74181-netlist     c~ a0 a1 a2 a3 b0 b1 b2 b3 nil t nil nil t)
+                    (f74181-generic-add c~ a0 a1 a2 a3 b0 b1 b2 b3))))
+  :hints (("Goal" :bdd (:vars nil))))
+
+
+(defun f74181-generic-v (inputs)
+  (f74181-generic-add
+    (nth 0 inputs)
+    (nth 1 inputs) (nth 2 inputs) (nth 3 inputs) (nth 4 inputs)
+    (nth 5 inputs) (nth 6 inputs) (nth 7 inputs) (nth 8 inputs)))
+
+
+;; while we're at it, we'll go ahead and make our own model of the lookahead
+;; carry circuit. It will take N propagate and generate inputs, output N-1
+;; carries and output a propagate and generate bit. It will have the same
+;; output as the f74182 when N=4
+
+;; the output propagate bit is true if any of the input propagate bits are high
+
+(defun v-or (a)
+  (if (atom a)
+      nil
+    (or (car a) (v-or (cdr a)))))
+
+(defun v-and (a)
+  (if (atom a)
+      t
+    (and (car a) (v-and (cdr a)))))
+
+;; the circuit for the generate bit looks like the following
+;; (or (and g0 g1 g2 g3)
+;;     (and p1 g1 g2 g3)
+;;     (and p2 g2 g3)
+;;     (and p3 g3))
+;;
+;; so we'll transform this into a recursive pattern
+
+(defun v-lkahead-generate-r (p g prev)
+  (if (atom p)
+      prev
+    (v-lkahead-generate-r (cdr p) (cdr g)
+                  (if prev
+                      (car g)
+                    (and (car p) (car g))))))
+
+(defun v-lkahead-generate (p g)
+  (v-lkahead-generate-r p g t))
+
+;; we now need a function to model the carries
+;; we notice the f74182 has the following pattern
+;; (nor (and p0 g0)
+;;      (and cin g0))
+
+;; (nor (and p1 g1)
+;;      (and p0 g0 g1)
+;;      (and cin g0 g1))
+
+;; (nor (and p2 g2)
+;;      (and p1 g1 g2)
+;;      (and p0 g0 g1 g2)
+;;      (and cin g0 g1 g2))
+
+;; (nor (and p3 g3)
+;;      (and p2 g2 g3)
+;;      (and p1 g1 g2 g3)
+;;      (and p0 g0 g1 g2 g3)
+;;      (and cin g0 g1 g2 g3))
+
+(defun rem-last (x)
+  (if (atom x)
+      nil
+    (if (atom (cdr x))
+        nil
+      (cons (car x) (rem-last (cdr x))))))
+
+(defun v-lkahead-carries-clause-r (p g)
+  (if (atom p)
+      nil
+    (or (and (car p) (v-and g))
+        (v-lkahead-carries-clause-r (cdr p) (cdr g)))))
+
+(defun v-lkahead-carries-clause (cin p g)
+  (not (or (and (not cin) (v-and g))
+           (v-lkahead-carries-clause-r p g))))
+
+(defun v-lkahead-carries (cin p g)
+  (if (atom p)
+      nil
+    (cons (v-lkahead-carries-clause cin p g)
+          (v-lkahead-carries cin (rem-last p) (rem-last g)))))
+
+;; and some more unwinding theorems
+
+(defthm v-or-cons
+  (equal (v-or (cons ai a))
+         (or ai (v-or a))))
+
+(defthm v-and-cons
+  (equal (v-and (cons ai a))
+         (and ai (v-and a))))
+
+(defthm v-lkahead-generate-cons
+  (equal (v-lkahead-generate-r (cons p-i p)
+                               (cons gi g) prev)
+         (v-lkahead-generate-r p g
+                               (if prev
+                                   gi
+                                 (and p-i gi)))))
+
+(defthm v-lkahead-carries-clause-cons
+  (equal (v-lkahead-carries-clause-r (cons p-i p)
+                                     (cons gi g))
+         (or (and p-i (and gi (v-and g)))
+             (v-lkahead-carries-clause-r p g))))
+
+;; now we will create a 1:1 generic model of f74182 and prove its correctness
+
+(defun f74182-generic (cin p0 p1 p2 p3 g0 g1 g2 g3)
+  (let* ((p (list p0 p1 p2 p3))
+         (g (list g0 g1 g2 g3))
+         (p~ (v-or p))
+         (g~ (v-lkahead-generate p g))
+         (cx (v-lkahead-carries-clause cin (list p0) (list g0)))
+         (cy (v-lkahead-carries-clause cin (list p0 p1) (list g0 g1)))
+         (cz (v-lkahead-carries-clause cin (list p0 p1 p2) (list g0 g1 g2))))
+    (list p~ g~ cx cy cz)))
+
+
+(defthm f74182-generic-correct
+  (let ((p (list p0 p1 p2 p3))
+        (g (list g0 g1 g2 g3)))
+    (implies (and (boolean-listp p)
+                  (boolean-listp g)
+                  (booleanp cin))
+             (equal (f74182-netlist cin p0 p1 p2 p3 g0 g1 g2 g3)
+                    (f74182-generic cin p0 p1 p2 p3 g0 g1 g2 g3)))))
 
 
 ;; We create wrappers which accept vectors as input in the wrapper functions
@@ -449,7 +435,7 @@
           lookahead-3
           (car cpg-3))))
 
-(defun lookahead-adder-generic-16 (c a b m s0 s1 s2 s3)
+(defun lookahead-adder-generic-16 (cin a b)
   (let* ((a0 (nth 0 a))
          (a1 (nth 1 a))
          (a2 (nth 2 a))
@@ -484,7 +470,7 @@
          (b15 (nth 15 b))
 
          ;; adder 0
-         (add-0 (f74181-generic-add c
+         (add-0 (f74181-generic-add cin
                                   a0 a1 a2 a3
                                   b0 b1 b2 b3))
          (add-0-f0  (car add-0))
@@ -492,65 +478,56 @@
          (add-0-f2  (caddr add-0))
          (add-0-f3  (cadddr add-0))
          (add-0-cpg (f74181-get-cpg add-0))
-         (lookahead-0 (f74182-netlist (car add-0-cpg)
-                                      (cadr add-0-cpg) nil nil nil
-                                      (caddr add-0-cpg) nil nil nil))
+         (p0 (nth 1 add-0-cpg))
+         (g0 (nth 2 add-0-cpg))
+         (cx (v-lkahead-carries-clause cin (list p0) (list g0)))
 
          ;; adder 1
-         (add-1 (f74181-generic-v (f74182-to-f74181-v
-                                   lookahead-0 0
-                                   a4 a5 a6 a7
-                                   b4 b5 b6 b7
-                                   m s0 s1 s2 s3)))
+         (add-1 (f74181-generic-add cx
+                                a4 a5 a6 a7
+                                b4 b5 b6 b7))
          (add-1-f0  (car add-1))
          (add-1-f1  (cadr add-1))
          (add-1-f2  (caddr add-1))
          (add-1-f3  (cadddr add-1))
          (add-1-cpg (f74181-get-cpg add-1))
-         (lookahead-1 (f74182-netlist
-                       (car add-0-cpg)
-                       (cadr add-0-cpg) (cadr add-1-cpg) nil nil
-                       (caddr add-0-cpg) (caddr add-1-cpg) nil nil))
+         (p1 (nth 1 add-1-cpg))
+         (g1 (nth 2 add-1-cpg))
+         (cy (v-lkahead-carries-clause cin (list p0 p1) (list g0 g1)))
 
          ;; adder 2
-         (add-2 (f74181-generic-v (f74182-to-f74181-v
-                                   lookahead-1 1
-                                   a8 a9 a10 a11
-                                   b8 b9 b10 b11
-                                   m s0 s1 s2 s3)))
+         (add-2 (f74181-generic-add cy
+                                a8 a9 a10 a11
+                                b8 b9 b10 b11))
          (add-2-f0  (car add-2))
          (add-2-f1  (cadr add-2))
          (add-2-f2  (caddr add-2))
          (add-2-f3  (cadddr add-2))
          (add-2-cpg (f74181-get-cpg add-2))
-         (lookahead-2
-          (f74182-netlist
-           (car add-0-cpg)
-           (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) nil
-           (caddr add-0-cpg) (caddr add-1-cpg) (caddr add-2-cpg) nil))
+         (p2 (nth 1 add-2-cpg))
+         (g2 (nth 2 add-2-cpg))
+         (cz (v-lkahead-carries-clause cin (list p0 p1 p2) (list g0 g1 g2)))
 
          ;; adder 3
-         (add-3 (f74181-generic-v (f74182-to-f74181-v
-                                   lookahead-2 2
-                                   a12 a13 a14 a15
-                                   b12 b13 b14 b15
-                                   m s0 s1 s2 s3)))
+         (add-3 (f74181-generic-add cz
+                                  a12 a13 a14 a15
+                                  b12 b13 b14 b15))
+
          (add-3-f0  (car add-3))
          (add-3-f1  (cadr add-3))
          (add-3-f2  (caddr add-3))
          (add-3-f3  (cadddr add-3))
          (cpg-3 (f74181-get-cpg add-3))
-         (lookahead-3
-          (f74182-netlist
-           (car add-0-cpg)
-           (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) (cadr cpg-3)
-           (caddr add-0-cpg) (caddr add-1-cpg) (caddr add-2-cpg) (caddr cpg-3))))
+
+         ;; p and g output
+         (p~ (v-or (list p0 p1 p2)))
+         (g~ (v-lkahead-generate (list p0 p1 p2) (list g0 g1 g2))))
 
     (list (list add-0-f0 add-0-f1 add-0-f2 add-0-f3
                 add-1-f0 add-1-f1 add-1-f2 add-1-f3
                 add-2-f0 add-2-f1 add-2-f2 add-2-f3
                 add-3-f0 add-3-f1 add-3-f2 add-3-f3)
-          lookahead-3
+          (list p~ g~ cx cy cz)
           (car cpg-3))))
 
 ;; Now let's see if the carry-lookahead adder really works!
@@ -558,58 +535,53 @@
 
 ;; just take my word for it that this one works. It takes about 36 seconds on
 ;; my machine. We'll just use the models with the generic 16 bit lookaheads
-;; from here on out. The generic version of this proof (next) takes about 12 seconds.
-(defthm lookahead-adder-16-really-adds
-  (let* ((a (list a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15))
-         (b (list b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15))
-         (s *S-ADD*)
-         (s0 (car s))
-         (s1 (cadr s))
-         (s2 (caddr s))
-         (s3 (cadddr s))
-         (m *M-LOW*)
-         (output (lookahead-adder-16 (not cin) a b m s0 s1 s2 s3))
-         (sum (car output))
-         (out0 (nth 0 sum))
-         (out1 (nth 1 sum))
-         (out2 (nth 2 sum))
-         (out3 (nth 3 sum))
-         (out4 (nth 4 sum))
-         (out5 (nth 5 sum))
-         (out6 (nth 6 sum))
-         (out7 (nth 7 sum))
-         (out8 (nth 8 sum))
-         (out9 (nth 9 sum))
-         (out10 (nth 10 sum))
-         (out11 (nth 11 sum))
-         (out12 (nth 12 sum))
-         (out13 (nth 13 sum))
-         (out14 (nth 14 sum))
-         (out15 (nth 15 sum))
-         (cout (not (caddr output))))
-    (implies (and (boolean-listp a)
-                  (boolean-listp b)
-                  (boolean-listp s)
-                  (boolean-listp sum)
-                  (booleanp m)
-                  (booleanp cin)
-                  (booleanp cout))
-             (equal (list out0 out1 out2 out3 out4 out5 out6 out7
-                          out8 out9 out10 out11 out12 out13 out14 out15 cout)
-                    (v-adder cin a b))))
-  :hints (("Goal" :bdd (:vars nil))))
+;; from here on out. The generic version of this proof (next) takes about 12
+;; seconds.
+(skip-proofs
+ (defthm lookahead-adder-16-really-adds
+   (let* ((a (list a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15))
+          (b (list b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15))
+          (s *S-ADD*)
+          (s0 (car s))
+          (s1 (cadr s))
+          (s2 (caddr s))
+          (s3 (cadddr s))
+          (m *M-LOW*)
+          (output (lookahead-adder-16 (not cin) a b m s0 s1 s2 s3))
+          (sum (car output))
+          (out0 (nth 0 sum))
+          (out1 (nth 1 sum))
+          (out2 (nth 2 sum))
+          (out3 (nth 3 sum))
+          (out4 (nth 4 sum))
+          (out5 (nth 5 sum))
+          (out6 (nth 6 sum))
+          (out7 (nth 7 sum))
+          (out8 (nth 8 sum))
+          (out9 (nth 9 sum))
+          (out10 (nth 10 sum))
+          (out11 (nth 11 sum))
+          (out12 (nth 12 sum))
+          (out13 (nth 13 sum))
+          (out14 (nth 14 sum))
+          (out15 (nth 15 sum))
+          (cout (not (caddr output))))
+     (implies (and (boolean-listp a)
+                   (boolean-listp b)
+                   (boolean-listp s)
+                   (boolean-listp sum)
+                   (booleanp m)
+                   (booleanp cin)
+                   (booleanp cout))
+              (equal (list out0 out1 out2 out3 out4 out5 out6 out7
+                           out8 out9 out10 out11 out12 out13 out14 out15 cout)
+                     (v-adder cin a b))))
+   :hints (("Goal" :bdd (:vars nil)))))
 
 (defthm lookahead-adder-generic-16-really-adds
   (let* ((a (list a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15))
          (b (list b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15))
-         (s *S-ADD*)
-         (s0 (car s))
-         (s1 (cadr s))
-         (s2 (caddr s))
-         (s3 (cadddr s))
-         (cin nil)
-         (m *M-LOW*)
-         (output (lookahead-adder-generic-16 (not cin) a b m s0 s1 s2 s3))
+         (output (lookahead-adder-generic-16 (not cin) a b))
          (sum (car output))
          (out0 (nth 0 sum))
          (out1 (nth 1 sum))
@@ -644,7 +616,7 @@
 ;; (cin a b m s0 s1 s2 s3)
 ;; -> ((sum) (p~ g~ c~+y c~+z) cout)
 
-(defun lookahead-adder-64 (cin a b m s0 s1 s2 s3)
+(defun lookahead-adder-64 (cin a b)
   (let* (
          (a0 (list (nth 0 a) (nth 1 a) (nth 2 a) (nth 3 a)
                    (nth 4 a) (nth 5 a) (nth 6 a) (nth 7 a)
@@ -679,34 +651,27 @@
                     (nth 56 b) (nth 57 b) (nth 58 b) (nth 59 b)
                     (nth 60 b) (nth 61 b) (nth 62 b) (nth 63 b)))
 
-         (add-0 (lookahead-adder-generic-16 cin a0 b0 m s0 s1 s2 s3))
-         (add-0-cpg (f74181-get-cpg add-0) )
-         (look-0 (f74182-netlist
-                  cin
-                  (cadr add-0-cpg) nil nil nil
-                  (caddr add-0-cpg) nil nil nil))
+         (add-0 (lookahead-adder-generic-16 cin a0 b0))
+         (add-0-cpg (f74181-get-cpg add-0))
+         (p0 (nth 1 add-0-cpg))
+         (g0 (nth 2 add-0-cpg))
+         (cx (v-lkahead-carries-clause cin (list p0) (list g0)))
 
-         (add-1 (lookahead-adder-generic-16 (nth 2 look-0) a16 b16 m s0 s1 s2 s3))
+         (add-1 (lookahead-adder-generic-16 cx a16 b16))
          (add-1-cpg (f74181-get-cpg add-1))
-         (look-1 (f74182-netlist
-                  cin
-                  (cadr add-0-cpg) (cadr add-1-cpg) nil nil
-                  (caddr add-0-cpg) (caddr add-1-cpg) nil nil))
+         (p1 (nth 1 add-1-cpg))
+         (g1 (nth 2 add-1-cpg))
+         (cy (v-lkahead-carries-clause cin (list p0 p1) (list g0 g1)))
 
-         (add-2 (lookahead-adder-generic-16 (nth 3 look-1) a32 b32 m s0 s1 s2 s3))
+         (add-2 (lookahead-adder-generic-16 cy a32 b32))
          (add-2-cpg (f74181-get-cpg add-2))
-         (look-2 (f74182-netlist
-                  cin
-                  (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) nil
-                  (caddr add-0-cpg) (caddr add-1-cpg) (caddr add-2-cpg) nil))
+         (p2 (nth 1 add-2-cpg))
+         (g2 (nth 2 add-2-cpg))
+         (cz (v-lkahead-carries-clause cin (list p0 p1 p2) (list g0 g1 g2)))
 
-         (add-3 (lookahead-adder-generic-16 (nth 4 look-2) a48 b48 m s0 s1 s2 s3))
-         (cpg-3 (f74181-get-cpg add-3))
-         (look-3 (f74182-netlist
-                  cin
-                  (cadr add-0-cpg) (cadr add-1-cpg) (cadr add-2-cpg) (cadr cpg-3)
-                  (caddr add-0-cpg) (caddr add-1-cpg) (caddr add-2-cpg) (caddr
-                                                                         cpg-3))))
+         (add-3 (lookahead-adder-generic-16 cz a48 b48))
+         (cpg-3 (f74181-get-cpg add-3)))
+
     (list (list
            (nth 0 add-0) (nth 1 add-0) (nth 2 add-0) (nth 3 add-0)
            (nth 4 add-0) (nth 5 add-0) (nth 6 add-0) (nth 7 add-0)
@@ -724,7 +689,7 @@
            (nth 4 add-3) (nth 5 add-3) (nth 6 add-3) (nth 7 add-3)
            (nth 8 add-3) (nth 9 add-3) (nth 10 add-3) (nth 11 add-3)
            (nth 12 add-3) (nth 13 add-3) (nth 14 add-3) (nth 15 add-3))
-          look-3
+          nil
           (car cpg-3))))
 
 ;; Now we show that our 64-bit adder can actually add
@@ -740,13 +705,7 @@
                   b32 b33 b34 b35 b36 b37 b38 b39 b40 b41 b42 b43 b44 b45 b46 b47
                   b48 b49 b50 b51 b52 b53 b54 b55 b56 b57 b58 b59 b60 b61 b62 b63))
 
-         (s *S-ADD*)
-         (s0 (car s))
-         (s1 (cadr s))
-         (s2 (caddr s))
-         (s3 (cadddr s))
-         (m *M-LOW*)
-         (output (lookahead-adder-64 (not cin) a b m s0 s1 s2 s3))
+         (output (lookahead-adder-64 (not cin) a b))
          (s (car output))
 
          (s-0 (nth 0 s)) (s-1 (nth 1 s)) (s-2 (nth 2 s)) (s-3 (nth 3 s))
@@ -769,7 +728,6 @@
          (cout (not (caddr output))))
     (implies (and (boolean-listp a)
                   (boolean-listp b)
-                  (boolean-listp s)
                   (booleanp m)
                   (booleanp cin))
              (equal (list
@@ -782,7 +740,8 @@
                      s-48 s-49 s-50 s-51 s-52 s-53 s-54 s-55
                      s-56 s-57 s-58 s-59 s-60 s-61 s-62 s-63
                      cout)
-                    (v-adder cin a b)))))
+                    (v-adder cin a b))))
+  :hints (("Goal" :bdd (:vars nil))))
 
 
 
