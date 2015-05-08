@@ -103,3 +103,23 @@
 (defthm net-arity-okp-f74182-netlist
   (net-arity-okp *f74182-netlist*)
   :rule-classes nil)
+
+(defthm f74182-netlist-is-same-as-f74182
+  (let* ((c (qv 0))
+         (p (list (qv 1) (qv 3) (qv 5) (qv 7)))
+         (g (list (qv 2) (qv 4) (qv 6) (qv 8)))
+         (p0 (car p))
+         (p1 (cadr p))
+         (p2 (caddr p))
+         (p3 (cadddr p))
+         (g0 (car g))
+         (g1 (cadr g))
+         (g2 (caddr g))
+         (g3 (cadddr g))
+         (netlist *f74182-netlist*))
+    (equal (se 'f74182
+               (list c p0 p1 p2 p3 g0 g1 g2 g3)
+               nil
+               netlist)
+           (f74182-netlist c p0 p1 p2 p3 g0 g1 g2 g3))))
+

@@ -1,0 +1,12 @@
+\select@language {english}
+\contentsline {section}{Introduction}{1}{Doc-Start}
+\contentsline {section}{\numberline {1}Generating ACL2 Models}{1}{section.1}
+\contentsline {subsection}{\numberline {1.1}Warming Up}{1}{subsection.1.1}
+\contentsline {subsubsection}{\numberline {1.1.1}Creating a Model of a 4-bit Comparator}{1}{subsubsection.1.1.1}
+\contentsline {subsubsection}{\numberline {1.1.2}Defining a Functional Comparator}{2}{subsubsection.1.1.2}
+\contentsline {section}{\numberline {2}The Carry Look-ahead Adder}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}The SN74AS181}{3}{subsection.2.1}
+\contentsline {section}{Acknowledgments}{3}{section*.3}
+\contentsline {section}{References}{3}{section*.3}
+\contentsline {section}{\numberline {A}Figures}{3}{appendix.A}
+\contentsfinish 
