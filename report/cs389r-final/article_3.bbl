@@ -1,9 +1,22 @@
 \begin{thebibliography}{1}
 
-\bibitem{Conway2000}
-Damian Conway.
-\newblock {\em Object {O}riented {P}erl: {A} comprehensive guide to concepts
-  and programming techniques}.
-\newblock Manning Publications Co., Connecticut, USA, 2000.
+\bibitem{bdd}
+Alan~J. Hu.
+\newblock {F}ormal {H}ardware {V}erification with {BDD}s: {A}n {I}ntroduction.
+
+\bibitem{TTL}
+Texas Instruments.
+\newblock {\em The TTL Data Book Volume 3}.
+\newblock Texas Instruments, Texas, USA, 1984.
+
+\bibitem{DE2}
+Warren A.~Hunt{,} Jr.{,} and Erik Reeber.
+\newblock Applications of the {DE2} {L}anguage, 2006.
+
+\bibitem{cedar}
+Benjamin Sprague{,} Dr. Kohl{,} Joshua Edward{,} Keith Shomper{,}~Matt
+  Lewellyn.
+\newblock C{EDAR} {L}ogic {S}imulator.
+\newblock \url{http://sourceforge.net/p/cedarlogic/wiki/Home/}, 2013.
 
 \end{thebibliography}

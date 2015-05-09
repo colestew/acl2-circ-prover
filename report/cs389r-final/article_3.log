@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  8 MAY 2015 14:27
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  8 MAY 2015 23:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -713,28 +713,28 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip63
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 50.
-Package hyperref Info: Option `breaklinks' set `true' on input line 50.
-Package hyperref Info: Option `bookmarksopen' set `false' on input line 50.
+Package hyperref Info: Option `colorlinks' set `true' on input line 62.
+Package hyperref Info: Option `breaklinks' set `true' on input line 62.
+Package hyperref Info: Option `bookmarksopen' set `false' on input line 62.
 
 (./article_3.aux)
 \openout1 = `article_3.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 78.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 90.
+LaTeX Font Info:    ... okay on input line 90.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 90.
+LaTeX Font Info:    ... okay on input line 90.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 90.
+LaTeX Font Info:    ... okay on input line 90.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 90.
+LaTeX Font Info:    ... okay on input line 90.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 90.
+LaTeX Font Info:    ... okay on input line 90.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 90.
+LaTeX Font Info:    ... okay on input line 90.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 90.
+LaTeX Font Info:    ... okay on input line 90.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 90.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
@@ -811,8 +811,8 @@ Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             or
 (lastpage)             http://www.ctan.org/tex-archive/ 
 (lastpage)             install/macros/latex/contrib/pageslts.tds.zip
-(lastpage)             ! on input line 78.
-LaTeX Info: Redefining \microtypecontext on input line 78.
+(lastpage)             ! on input line 90.
+LaTeX Info: Redefining \microtypecontext on input line 90.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -827,7 +827,7 @@ File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
 )
 \c@lstlisting=\count144
 \AtBeginShipoutBox=\box33
-Package hyperref Info: Link coloring ON on input line 78.
+Package hyperref Info: Link coloring ON on input line 90.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -837,15 +837,15 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count145
 )
-LaTeX Info: Redefining \ref on input line 78.
-LaTeX Info: Redefining \pageref on input line 78.
-LaTeX Info: Redefining \nameref on input line 78.
+LaTeX Info: Redefining \ref on input line 90.
+LaTeX Info: Redefining \pageref on input line 90.
+LaTeX Info: Redefining \nameref on input line 90.
 
 (./article_3.out) (./article_3.out)
 \@outlinefile=\write3
 \openout3 = `article_3.out'.
 
-LaTeX Font Info:    Try loading font information for OT1+phv on input line 83.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 95.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1phv.fd
 File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
@@ -855,12 +855,12 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <9> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <20> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 83.
-LaTeX Font Info:    Try loading font information for OT1+ztmcm on input line 83
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 95.
+LaTeX Font Info:    Try loading font information for OT1+ztmcm on input line 95
 .
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1ztmcm.fd
@@ -870,30 +870,30 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `ztmcm' (encoding: OT1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-LaTeX Font Info:    Try loading font information for OML+ztmcm on input line 83
+LaTeX Font Info:    Try loading font information for OML+ztmcm on input line 95
 .
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/omlztmcm.fd
 File: omlztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ztmcm.
 )
-LaTeX Font Info:    Try loading font information for OMS+ztmcm on input line 83
+LaTeX Font Info:    Try loading font information for OMS+ztmcm on input line 95
 .
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/omsztmcm.fd
 File: omsztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMS/ztmcm.
 )
-LaTeX Font Info:    Try loading font information for OMX+ztmcm on input line 83
+LaTeX Font Info:    Try loading font information for OMX+ztmcm on input line 95
 .
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/omxztmcm.fd
 File: omxztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/ztmcm.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 95.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
@@ -902,19 +902,19 @@ File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <8> not available
-(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 83.
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 95.
 LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <12> not available
-(Font)              Font shape `OT1/phv/b/n' tried instead on input line 84.
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 96.
 
 (./article_3.toc
 LaTeX Font Info:    Try loading font information for OMS+phv on input line 6.
@@ -928,7 +928,7 @@ LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <8> not available
 \openout4 = `article_3.toc'.
 
 
-Overfull \hbox (0.71571pt too wide) in paragraph at lines 104--105
+Overfull \hbox (0.71571pt too wide) in paragraph at lines 115--116
 \OT1/ptm/m/n/10 (-20) from cir-cuits de-fined in CEDAR Logic Sim-u-la-tor, whic
 h
  []
@@ -937,17 +937,17 @@ h
 
 
 ]
-<comparator.png, id=76, 566.61688pt x 359.3425pt>
+<comparator.png, id=160, 566.61688pt x 359.3425pt>
 File: comparator.png Graphic file (type png)
  <use comparator.png>
-Package pdftex.def Info: comparator.png used on input line 127.
+Package pdftex.def Info: comparator.png used on input line 136.
 (pdftex.def)             Requested size: 242.41745pt x 153.73566pt.
 
-Overfull \hbox (2.0pt too wide) in paragraph at lines 127--129
+Overfull \hbox (2.0pt too wide) in paragraph at lines 136--138
 [][] 
  []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 134.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 143.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
@@ -956,67 +956,103 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `pcr' (encoding: OT1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <8> not available
-(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 135.
-LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <8> not available
-(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 136.
+LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <9> not available
+(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 144.
+LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <9> not available
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 145.
 
+<lookahead.png, id=164, 1072.005pt x 328.22626pt>
+File: lookahead.png Graphic file (type png)
+ <use lookahead.png>
+Package pdftex.def Info: lookahead.png used on input line 200.
+(pdftex.def)             Requested size: 500.484pt x 153.23463pt.
 
-LaTeX Warning: Citation `TTL' on page 2 undefined on input line 192.
+Underfull \vbox (badness 4084) has occurred while \output is active []
 
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 194.
+ [2 <./comparator.png>]
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 207.
 
-(/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/omsptm.fd
+ (/usr/local/texlive/2014/texmf-dist/tex/latex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 194.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 207.
 
-Overfull \hbox (11.51904pt too wide) in paragraph at lines 198--199
+Overfull \hbox (11.51904pt too wide) in paragraph at lines 213--214
 \OT1/ptm/m/n/10 (-20) SN74AS181A mod-ules func-tion-ing as adders with 5 SN74AS
 182
  []
 
+[3 <./lookahead.png>] [4]
+Overfull \hbox (5.08255pt too wide) in paragraph at lines 332--334
+[][][][][][][][][][][][][][][][][][] 
+ []
 
-LaTeX Warning: Citation `TTL' on page 2 undefined on input line 201.
+[5] <bdd.png, id=340, 1705.37125pt x 1014.79124pt>
+File: bdd.png Graphic file (type png)
+ <use bdd.png>
+Package pdftex.def Info: bdd.png used on input line 418.
+(pdftex.def)             Requested size: 242.41745pt x 144.23763pt.
 
+Underfull \hbox (badness 10000) in paragraph at lines 418--420
 
-LaTeX Warning: Citation `TTL' on page 2 undefined on input line 201.
-
-<lookahead.png, id=79, 701.62125pt x 205.76875pt>
-File: lookahead.png Graphic file (type png)
- <use lookahead.png>
-Package pdftex.def Info: lookahead.png used on input line 205.
-(pdftex.def)             Requested size: 242.41745pt x 71.0939pt.
- [2 <./comparator.png>] (./article_3.bbl)
-Overfull \hbox (0.47974pt too wide) in paragraph at lines 240--240
-|\OT1/phv/b/n/10 Output of Cir-cuit-ToAcl2 given XML of cir-cuit de-fined
  []
 
 
+Overfull \hbox (4.39998pt too wide) in paragraph at lines 424--424
+ |[]\OT1/phv/b/n/10 Modeling and Ver-i-fy-ing a 64-bit Carry Looka-head
+ []
+
+[6 <./bdd.png>]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `\\' on input line 428.
+
+(./article_3.bbl
+Underfull \hbox (badness 10000) in paragraph at lines 17--21
+[][]$\OT1/pcr/m/n/10 http : / / sourceforge . net / p / cedarlogic /
+ []
+
+) [7] [8
+
+] <181.png, id=446, 714.67pt x 829.0975pt>
+File: 181.png Graphic file (type png)
+ <use 181.png>
+Package pdftex.def Info: 181.png used on input line 584.
+(pdftex.def)             Requested size: 357.33412pt x 414.54774pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [9]
+<182.png, id=510, 489.83pt x 815.045pt>
+File: 182.png Graphic file (type png)
+ <use 182.png>
+Package pdftex.def Info: 182.png used on input line 589.
+(pdftex.def)             Requested size: 195.92853pt x 326.01222pt.
+
+
 AED: lastpage setting LastPage
-[3 <./lookahead.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 267.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 267.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [10 <./181.png>] [11 <./182.png>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 591.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 591.
  (./article_3.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 267.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 267.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 591.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 591.
 Package rerunfilecheck Info: File `article_3.out' has not changed.
-(rerunfilecheck)             Checksum: A2259C8AA4CF3AA416FFDCEF4CE1071A;615.
-
-
-LaTeX Warning: There were undefined references.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 267.
+(rerunfilecheck)             Checksum: E72C1F86FE2E5D73849F1BA6B3024453;1738.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 591.
  ) 
 Here is how much of TeX's memory you used:
- 13618 strings out of 493117
- 198923 string characters out of 6135433
- 442405 words of memory out of 5000000
- 16577 multiletter control sequences out of 15000+600000
- 67022 words of font info for 231 fonts, out of 8000000 for 9000
+ 14060 strings out of 493117
+ 204370 string characters out of 6135433
+ 367477 words of memory out of 5000000
+ 16757 multiletter control sequences out of 15000+600000
+ 67441 words of font info for 251 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 43i,11n,51p,1242b,1516s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 43i,12n,51p,1318b,1840s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
 xlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texl
@@ -1030,10 +1066,10 @@ rw/helvetic/uhvr8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/helv
 etic/uhvro8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utmb
 8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></u
 sr/local/texlive/2014/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on article_3.pdf (3 pages, 256959 bytes).
+Output written on article_3.pdf (11 pages, 897280 bytes).
 PDF statistics:
- 233 PDF objects out of 1000 (max. 8388607)
- 199 compressed objects within 2 object streams
- 84 named destinations out of 1000 (max. 500000)
- 59483 words of extra memory for PDF output out of 61914 (max. 10000000)
+ 633 PDF objects out of 1000 (max. 8388607)
+ 567 compressed objects within 6 object streams
+ 313 named destinations out of 1000 (max. 500000)
+ 59090 words of extra memory for PDF output out of 61914 (max. 10000000)
 

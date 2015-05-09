@@ -1,12 +1,25 @@
 \select@language {english}
 \contentsline {section}{Introduction}{1}{Doc-Start}
 \contentsline {section}{\numberline {1}Generating ACL2 Models}{1}{section.1}
-\contentsline {subsection}{\numberline {1.1}Warming Up}{1}{subsection.1.1}
-\contentsline {subsubsection}{\numberline {1.1.1}Creating a Model of a 4-bit Comparator}{1}{subsubsection.1.1.1}
+\contentsline {subsection}{\numberline {1.1}Warming Up}{2}{subsection.1.1}
+\contentsline {subsubsection}{\numberline {1.1.1}Creating a Model of a 4-bit Comparator}{2}{subsubsection.1.1.1}
 \contentsline {subsubsection}{\numberline {1.1.2}Defining a Functional Comparator}{2}{subsubsection.1.1.2}
-\contentsline {section}{\numberline {2}The Carry Look-ahead Adder}{2}{section.2}
-\contentsline {subsection}{\numberline {2.1}The SN74AS181}{3}{subsection.2.1}
-\contentsline {section}{Acknowledgments}{3}{section*.3}
-\contentsline {section}{References}{3}{section*.3}
-\contentsline {section}{\numberline {A}Figures}{3}{appendix.A}
+\contentsline {section}{\numberline {2}The Carry Lookahead Adder}{3}{section.2}
+\contentsline {subsection}{\numberline {2.1}The SN74AS181 from the TTL}{3}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}The SN74AS182 from the TTL}{3}{subsection.2.2}
+\contentsline {section}{\numberline {3}Verifying Correctness of a 16-bit Carry Lookahead Adder Using BDD's}{3}{section.3}
+\contentsline {subsection}{\numberline {3.1}Modeling an Adder with Propagate and Generate}{4}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Modeling the Lookahead's Propagate and Generate Outputs}{4}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Modeling the Lookahead's Carry Outputs}{4}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Modeling the 16-bit Lookahead Adder}{5}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}Verifying the 16-bit Lookahead Adder}{5}{subsection.3.5}
+\contentsline {section}{\numberline {4}Verifying Correctness of a 64-bit Carry Lookahead Adder Using UBDD's}{5}{section.4}
+\contentsline {subsection}{\numberline {4.1}Modeling and Verifying a 64-bit Carry Lookahead Adder}{6}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Generating and Verifying a 16,384-bit Carry \\Lookahead Adder}{7}{subsection.4.2}
+\contentsline {section}{\numberline {5}Conclusion and Future Work}{7}{section.5}
+\contentsline {section}{Acknowledgments}{7}{section*.4}
+\contentsline {section}{References}{7}{section*.4}
+\contentsline {section}{Appendix}{8}{section*.4}
+\contentsline {section}{\numberline {A}ACL2 Excerpts}{8}{appendix.A}
+\contentsline {section}{\numberline {B}Figures}{9}{appendix.B}
 \contentsfinish 

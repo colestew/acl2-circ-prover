@@ -134,29 +134,27 @@
          (s-out (append (car complete-answer) (list c-out))))
     (equal s-out (qv-adder c a b))))
 
-(skip-proofs
  ;; the following proofs go through, they just take a while!
  ;; (4 seconds and 30 seconds)
- (defthm lkahead-4096-gen-can-add
-   (let* ((a (qv-number 6 4096 2)) ;; 4^(4+2) = 4096
-          (b (qv-number 7 4096 2)) ;; so N=4
-          (c (qv 5))
-          (cin (q-not c))
-          (complete-answer
-           (lkahead-N-netlist cin a b 4))
-          (c-out (q-not (cadr complete-answer)))
-          (s-out (append (car complete-answer) (list c-out))))
-     (equal s-out (qv-adder c a b)))))
+(defthm lkahead-4096-gen-can-add
+  (let* ((a (qv-number 6 4096 2)) ;; 4^(4+2) = 4096
+         (b (qv-number 7 4096 2)) ;; so N=4
+         (c (qv 5))
+         (cin (q-not c))
+         (complete-answer
+          (lkahead-N-netlist cin a b 4))
+         (c-out (q-not (cadr complete-answer)))
+         (s-out (append (car complete-answer) (list c-out))))
+    (equal s-out (qv-adder c a b))))
 
-(skip-proofs
- (defthm lkahead-16384-gen-can-add
-   (let* ((a (qv-number 6 16384 2)) ;; 4^(5+2) = 16384
-          (b (qv-number 7 16384 2)) ;; so N=5
-          (c (qv 5))
-          (cin (q-not c))
-          (complete-answer
-           (lkahead-N-netlist cin a b 5))
-          (c-out (q-not (cadr complete-answer)))
-          (s-out (append (car complete-answer) (list c-out))))
-     (equal s-out (qv-adder c a b)))))
+(defthm lkahead-16384-gen-can-add
+  (let* ((a (qv-number 6 16384 2)) ;; 4^(5+2) = 16384
+         (b (qv-number 7 16384 2)) ;; so N=5
+         (c (qv 5))
+         (cin (q-not c))
+         (complete-answer
+          (lkahead-N-netlist cin a b 5))
+         (c-out (q-not (cadr complete-answer)))
+         (s-out (append (car complete-answer) (list c-out))))
+    (equal s-out (qv-adder c a b))))
 
